@@ -169,10 +169,11 @@ not depend on a name staying stable:
   `~/.config/devin/config.json`. Inside a sandbox an unannounced binary swap
   under a running session is a hazard rather than a convenience.
   `cli.devin.ai` and `static.devin.ai` stay allowed at run time as well as
-  build time, for version checks and for an explicitly-requested update. Note
-  that the installer refuses to overwrite a non-symlink at
-  `~/.local/bin/devin`, which is where this kit's wrapper lives, so an update
-  that re-runs the install script will stop rather than replace it.
+  build time (both fall under the `*.devin.ai` entry, [below](#network-policy)),
+  for version checks and for an explicitly-requested update. Note that the
+  installer refuses to overwrite a non-symlink at `~/.local/bin/devin`, which
+  is where this kit's wrapper lives, so an update that re-runs the install
+  script will stop rather than replace it.
 
 `unleash.codeium.com` *is* allowed, and it is a feature-flag service rather
 than a telemetry sink. It is also not inert: with that host blocked, the CLI
@@ -213,10 +214,23 @@ accumulate.
 
 ## Network policy
 
-`permissions.network.allow` lists Devin's own hosts, both sign-in hosts, the
-Codeium backend the model and seat services still live on, the install/update
-hosts, and the apt sources the base image ships — which the startup
-`apt-get update` fails wholesale without.
+`permissions.network.allow` lists Devin's own hosts (collapsed to a single
+`*.devin.ai` wildcard, below), the alternate sign-in host, the Codeium backend
+the model and seat services still live on, and the apt sources the base image
+ships — which the startup `apt-get update` fails wholesale without.
+
+`*.devin.ai` replaces four hosts this kit previously enumerated individually
+— `api.devin.ai` (the API the CLI talks to and the OAuth token endpoint),
+`app.devin.ai` (the sign-in page), `cli.devin.ai` (`install.sh`) and
+`static.devin.ai` (the install manifest and versioned bundle) — at the
+owner's request, so that a new devin.ai subdomain doesn't strand the kit
+under `deny-all`. The wildcard matches exactly one DNS label, so it does not
+cover the bare apex `devin.ai`; nothing in this spec requests that host, so it
+is not listed either. It also covers `api.devin.ai` as an `apiKey.inject[]`
+domain and as the OAuth `tokenEndpoint` host without a separate literal
+entry — the inject-coverage check `scripts/verify-kit-spec` runs
+(`spec/validate.go`'s `allowListCovers`) is wildcard-aware and mirrors the
+engine's own runtime matching, not a literal string comparison.
 
 Devin CLI is built on the Windsurf/Codeium codebase, which is why
 `server.codeium.com` and `unleash.codeium.com` are not strays: without the

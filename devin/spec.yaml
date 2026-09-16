@@ -157,11 +157,26 @@ permissions:
     # Mixing the two forms in one list would leave the difference looking
     # meaningful when it is not.
     allow:
-      # Devin's own hosts. api.devin.ai is the API the CLI talks to and the
+      # Devin's own hosts, collapsed to the vendor's wildcard rather than
+      # enumerated (owner-requested — the built-in this kit replaces lists
+      # them one by one). api.devin.ai is the API the CLI talks to and the
       # OAuth token endpoint above; app.devin.ai serves the sign-in page the
-      # entrypoint wrapper hands the user off to.
-      - api.devin.ai
-      - app.devin.ai
+      # entrypoint wrapper hands the user off to; cli.devin.ai serves
+      # install.sh and static.devin.ai serves the manifest and versioned
+      # bundle it reads (background self-update is off, see setup.files
+      # below, so nothing reaches these two unless the user explicitly asks
+      # for an update). `*.devin.ai` matches exactly one DNS label, which is
+      # also why it needs no separate literal entry for the apiKey inject
+      # domain or the OAuth tokenEndpoint host above (both api.devin.ai): the
+      # coverage check `scripts/verify-kit-spec` runs is wildcard-aware
+      # (spec/validate.go's allowListCovers), not literal string equality,
+      # and mirrors the engine's own runtime matching. Scope stays the
+      # vendor's domain — a new devin.ai subdomain (a renamed API host, a new
+      # CDN label) doesn't strand the kit under deny-all the way an
+      # enumerated list would. The bare apex is deliberately not listed:
+      # nothing in this spec requests it, and `*.devin.ai` would not cover it
+      # anyway (the wildcard matches one label, never zero).
+      - "*.devin.ai"
       # Alternate sign-in host. Which of app.devin.ai and windsurf.com an
       # account is sent to is decided server-side, so both are allowed rather
       # than betting on one and leaving half of all accounts unable to log in.
@@ -174,15 +189,6 @@ permissions:
       # of the app.devin.ai one, so the flags it serves reach the login path.
       - server.codeium.com
       - unleash.codeium.com
-      # The install happens at image-build time, but both hosts are reachable
-      # at run time too, for version checks and an explicitly-requested
-      # update: cli.devin.ai
-      # serves install.sh, which reads a manifest from static.devin.ai and
-      # pulls the versioned bundle from there. Background self-update is off
-      # (see setup.files below), so nothing reaches these unless the user asks
-      # for it.
-      - cli.devin.ai
-      - static.devin.ai
       # `apt-get update` (the startup hook below) refreshes metadata for every
       # configured apt source and returns exit 100 if any one of them fails.
       # The shell-docker base ships three sources, so all three must be
