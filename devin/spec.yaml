@@ -15,7 +15,7 @@ description: Devin CLI by Cognition, signed in from inside the sandbox and resol
 sandbox:
   # Built from the Dockerfile beside this spec and published by
   # .github/workflows/build-and-publish-kits.yml. Carries a Docker engine and
-  # requests Docker-in-Docker, matching the agent this kit replaces.
+  # requests Docker-in-Docker.
   #
   # This value is the source of truth for what CI builds and publishes: the
   # workflow reads it from here rather than deriving a name, because spec.yaml
@@ -144,22 +144,19 @@ credentials:
 
 permissions:
   network:
-    # Carried over from the built-in this kit replaces, which declared the
-    # agent's own hosts, plus the apt sources the base image ships. This
-    # repo's e2e runs every kit under `sbx policy init deny-all`, so the kit
-    # gets exactly the reachability declared here and nothing more.
+    # Declares the agent's own hosts, plus the apt sources the base image
+    # ships. This repo's e2e runs every kit under `sbx policy init deny-all`,
+    # so the kit gets exactly the reachability declared here and nothing
+    # more.
     #
-    # Entries are written without a port, which is this repo's house style and
-    # a change from the built-in spec's `host:443` form. A portless pattern
-    # matches any port, which is what the apt hosts at the bottom need —
-    # pinning them to :80 breaks the moment a mirror answers over https and
-    # `apt-get update` then fails wholesale rather than skipping one source.
-    # Mixing the two forms in one list would leave the difference looking
-    # meaningful when it is not.
+    # Entries are written without a port, which is this repo's house style.
+    # A portless pattern matches any port, which is what the apt hosts at the
+    # bottom need — pinning them to :80 breaks the moment a mirror answers
+    # over https and `apt-get update` then fails wholesale rather than
+    # skipping one source.
     allow:
       # Devin's own hosts, collapsed to the vendor's wildcard rather than
-      # enumerated (owner-requested — the built-in this kit replaces lists
-      # them one by one). api.devin.ai is the API the CLI talks to and the
+      # enumerated. api.devin.ai is the API the CLI talks to and the
       # OAuth token endpoint above; app.devin.ai serves the sign-in page the
       # entrypoint wrapper hands the user off to; cli.devin.ai serves
       # install.sh and static.devin.ai serves the manifest and versioned
@@ -204,9 +201,9 @@ permissions:
       #
       #   * The Sentry crash-reporting ingest host. Devin CLI reaches it on a
       #     crash; a sandbox has no business reporting to a third party on the
-      #     user's behalf, and leaving the host unlisted is the durable form of
-      #     that decision — it holds even if the CLI grows an opt-out variable
-      #     later, which is more than an environment variable could promise.
+      #     user's behalf. Leaving the host unlisted holds even if the CLI
+      #     grows an opt-out variable later, which is more than an
+      #     environment variable could promise.
       #   * server-beta.codeium.com. It is not the default backend, and adding
       #     a host on speculation is how an allow-list stops describing
       #     anything.

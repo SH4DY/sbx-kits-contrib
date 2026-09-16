@@ -154,8 +154,8 @@ that this kit could verify against the shipped binary, and the sibling kits'
 rule for this is to throw a switch that exists — not to guess at one. A
 variable name invented here would read as a control while controlling nothing.
 
-What the kit does instead is the durable half of the same decision, and it does
-not depend on a name staying stable:
+The kit achieves the same effect two other ways, and neither depends on a name
+staying stable:
 
 - **The crash-reporting ingest host is not in
   `permissions.network.allow`.** Devin CLI reaches a third-party Sentry
@@ -215,11 +215,10 @@ accumulate.
 the model and seat services still live on, and the apt sources the base image
 ships — which the startup `apt-get update` fails wholesale without.
 
-`*.devin.ai` replaces four hosts this kit previously enumerated individually
-— `api.devin.ai` (the API the CLI talks to and the OAuth token endpoint),
-`app.devin.ai` (the sign-in page), `cli.devin.ai` (`install.sh`) and
-`static.devin.ai` (the install manifest and versioned bundle) — at the
-owner's request, so that a new devin.ai subdomain doesn't strand the kit
+`*.devin.ai` covers Devin's own hosts — `api.devin.ai` (the API the CLI talks
+to and the OAuth token endpoint), `app.devin.ai` (the sign-in page),
+`cli.devin.ai` (`install.sh`) and `static.devin.ai` (the install manifest and
+versioned bundle) — so that a new devin.ai subdomain doesn't strand the kit
 under `deny-all`. The wildcard matches exactly one DNS label, so it does not
 cover the bare apex `devin.ai`; nothing in this spec requests that host, so it
 is not listed either. It also covers `api.devin.ai` as an `apiKey.inject[]`
@@ -237,9 +236,7 @@ betting on one and leaving half of all accounts unable to log in.
 
 Entries carry no port. A portless pattern matches any port, and pinning the apt
 hosts to `:80` breaks as soon as a mirror answers over HTTPS, with that same
-wholesale failure. (The built-in this kit is extracted from wrote its hosts as
-`host:443`; the list here is portless throughout so the difference does not
-look meaningful where it is not.)
+wholesale failure.
 
 Three omissions are deliberate:
 
@@ -274,7 +271,7 @@ arrange, and a section that says nothing costs context on every session.
 
 ## Session state
 
-No volumes are declared, matching the agent this kit replaces. Devin's session
+No volumes are declared. Devin's session
 state and its credential file live in the container's writable layer, so they
 survive stop/start and are rebuilt on recreate — the credential by the engine
 rendering `credentials.toml` again from what the host holds, which is the same
@@ -289,8 +286,7 @@ publishes its own, from the `Dockerfile` in this directory.
 
 The image is **`docker.io/sbx/devin-image`**, built on
 `docker/sandbox-templates:shell-docker`, so it carries a Docker engine and
-requests Docker-in-Docker — matching the agent this kit replaces, which
-resolved to the Docker flavour of its template.
+requests Docker-in-Docker.
 
 The `-image` suffix distinguishes the base image from the kit itself: the kit
 is published as an OCI artifact at `docker.io/sbx/devin-kit` (see
