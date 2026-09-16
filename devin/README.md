@@ -12,10 +12,6 @@ replaces that, and is backed by a base image built from the
 [`Dockerfile`](./Dockerfile) in this directory rather than by the
 `docker/sandbox-templates` release train.
 
-On `sbx` releases that still ship a built-in agent named `devin`, this kit
-cannot load under its own name — `sbx` refuses any kit whose name collides with
-a built-in, by design, with no override.
-
 ## Prerequisites
 
 None, and unlike the sibling kits that is the *expected* path rather than a
