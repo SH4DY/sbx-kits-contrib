@@ -3,16 +3,11 @@ kind: mixin
 name: snyk-evo-ads
 displayName: Snyk Evo ADS
 description: "Installs Snyk AgentScan, Agent Guard, and/or Snyk Studio, selected via SNYK_COMPONENTS, directly from their public release channels"
-requires:
-  agent: claude
 
-# agentInstructions below is still Claude Code-specific prose, so
-# requires.agent is a real constraint, not just documentation - see
-# code-server's spec.yaml in this repo for why: a mixin declares base-agent
-# affinity instead of `extends:` because it inherits the base agent's
-# credentials at compose time. guard install all (below), though, installs
+# Agent-agnostic: no `requires.agent`. guard install all (below) installs
 # hooks for whichever of claude/cursor/codex is actually present, skipping
-# the rest with a warning rather than erroring.
+# the rest with a warning rather than erroring. agentInstructions content is
+# still Claude Code-specific prose, though.
 # Requires sbx >= 0.39.0 for sandbox identity and startup commands.
 
 agentInstructions:
@@ -43,7 +38,7 @@ agentInstructions:
     Scan as --analysis-url with the same path AgentScan uses by default
     (only the host changes). This kit's network allowlist covers any host
     under snyk.io (any subdomain depth), so a SNYK_API host under snyk.io
-    works with no extra setup.
+    works with no extra setup. 
 
     AgentScan authentication is separate from Snyk CLI authentication. Do not
     require `snyk auth` for AgentScan; it uses the supplied SNYK_TOKEN or
