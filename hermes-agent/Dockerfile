@@ -29,7 +29,7 @@ ARG HERMES_VERSION=""
 ADD --chmod=644 https://github.com/NousResearch/hermes-agent/releases.atom /tmp/hermes-releases.atom
 
 USER agent
-WORKDIR /home/agent
+WORKDIR /home/agent/workspace
 
 # The tag comes from github.com's own /releases/latest redirect, not from the
 # releases API: unauthenticated api.github.com quota is counted per source IP
